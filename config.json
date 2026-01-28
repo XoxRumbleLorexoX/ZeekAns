@@ -1,0 +1,33 @@
+{
+  "interface": "",
+  "interfaces": ["en1", "en2", "en7"],
+  "start_zeek": true,
+  "zeek_use_sudo": true,
+  "log_dir": "./logs",
+  "ollama": {
+    "enabled": true,
+    "url": "http://127.0.0.1:11434/api/generate",
+    "model": "llama3:latest",
+    "timeout_sec": 90
+  },
+  "alerts": {
+    "output_dir": "./alerts",
+    "cooldown_sec": 30
+  },
+  "knockknock": {
+    "enabled": true,
+    "sequence_ports": [2222, 3333, 4444],
+    "window_sec": 10,
+    "armed_ttl_sec": 300,
+    "admin_ip": "",
+    "local_ips": []
+  },
+  "anomaly": {
+    "scan_window_sec": 30,
+    "scan_unique_ports_threshold": 20,
+    "scan_failed_threshold": 15,
+    "dns_window_sec": 60,
+    "dns_unique_domains_threshold": 30,
+    "dns_long_domain_len": 60
+  }
+}

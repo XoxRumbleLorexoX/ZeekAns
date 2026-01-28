@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+
+# Logs / runtime artifacts
+logs/
+alerts/
+*.log
+*.jsonl
+
+# OS
+.DS_Store
+
+# Zeek artifacts
+*.zeekstate
+*.zeeklog
