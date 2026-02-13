@@ -54,9 +54,21 @@ class LogTailer:
         self.file = None
         self.fields = None
 
-    def _open(self):
+    def _close(self):
+        if not self.file:
+            return
+        try:
+            self.file.close()
+        finally:
+            self.file = None
+
+    def _open(self, start_at_end=None):
+        if start_at_end is None:
+            start_at_end = self.start_at_end
+        self._close()
+        self.fields = None
         self.file = open(self.path, "r", encoding="utf-8", errors="replace")
-        if self.start_at_end:
+        if start_at_end:
             # Read headers to learn fields, then jump to end for new events.
             for _ in range(50):
                 line = self.file.readline()
@@ -73,18 +85,46 @@ class LogTailer:
             time.sleep(0.2)
         self._open()
 
+    def _reopen_if_rotated(self):
+        if not self.file:
+            return
+        try:
+            path_stat = os.stat(self.path)
+        except FileNotFoundError:
+            return
+        try:
+            file_stat = os.fstat(self.file.fileno())
+            file_pos = self.file.tell()
+        except OSError:
+            self._open(start_at_end=False)
+            return
+
+        inode_changed = (
+            path_stat.st_ino != file_stat.st_ino or
+            path_stat.st_dev != file_stat.st_dev
+        )
+        truncated = path_stat.st_size < file_pos
+        if inode_changed or truncated:
+            # Reopen from start so post-rotation entries are not missed.
+            self._open(start_at_end=False)
+
     def read_new(self):
         self._ensure_open()
         records = []
         while True:
+            self._reopen_if_rotated()
             line = self.file.readline()
             if not line:
+                prev_file = self.file
+                self._reopen_if_rotated()
+                if self.file is not prev_file:
+                    continue
                 break
             line = line.rstrip("\n")
             if not line:
                 continue
             if line.startswith("#fields"):
-                self.fields = line.split("\t")[1:]
+                self.fields = line.rstrip("\n").split("\t")[1:]
                 continue
             if line.startswith("#"):
                 continue
@@ -365,8 +405,10 @@ def start_zeek(interface, log_dir, zeek_script, use_sudo):
     if not zeek_bin:
         raise FileNotFoundError("zeek not found in PATH")
     os.makedirs(log_dir, exist_ok=True)
+    run_as_root = hasattr(os, "geteuid") and os.geteuid() == 0
+    use_sudo_cmd = bool(use_sudo) and not run_as_root
     cmd = []
-    if use_sudo:
+    if use_sudo_cmd:
         # -n prevents sudo from blocking on a hidden password prompt.
         cmd.extend(["sudo", "-n", zeek_bin])
     else:
@@ -379,9 +421,9 @@ def start_zeek(interface, log_dir, zeek_script, use_sudo):
         f"redef Log::default_logdir=\"{log_dir}\"",
         zeek_script,
     ])
-    stderr = subprocess.PIPE if use_sudo else subprocess.DEVNULL
+    stderr = subprocess.PIPE if use_sudo_cmd else subprocess.DEVNULL
     proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=stderr)
-    if use_sudo:
+    if use_sudo_cmd:
         time.sleep(0.2)
         if proc.poll() is not None and proc.returncode != 0:
             err = ""

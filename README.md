@@ -60,6 +60,42 @@ Set `interfaces` in `config.json` to run one Zeek process per interface:
 
 Each interface writes logs under `./logs/<iface>/` and the Python monitor tails all of them.
 
+## Run at startup (macOS)
+Install as a `launchd` system service:
+
+```bash
+./scripts/service_macos.sh install
+```
+
+The installer now performs preflight checks for:
+- `python3` and `zeek` on the daemon PATH
+- valid `config.json`
+- configured network interfaces existing on the host
+
+Check status:
+
+```bash
+./scripts/service_macos.sh status
+```
+
+Restart the service:
+
+```bash
+./scripts/service_macos.sh restart
+```
+
+Startup logs:
+
+```bash
+./scripts/service_macos.sh logs 120
+```
+
+Remove startup service:
+
+```bash
+./scripts/service_macos.sh uninstall
+```
+
 ## Notes
 - This is meant to be lightweight: no external Python dependencies.
 - Tune thresholds in `config.json` for your environment.
