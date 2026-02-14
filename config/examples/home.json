@@ -1,6 +1,6 @@
 {
   "interface": "",
-  "interfaces": ["en1", "en2", "en7"],
+  "interfaces": ["en0"],
   "start_zeek": true,
   "zeek_use_sudo": true,
   "log_dir": "./logs",
@@ -26,15 +26,18 @@
   },
   "anomaly": {
     "scan_window_sec": 30,
-    "scan_unique_ports_threshold": 20,
-    "scan_unique_hosts_threshold": 20,
-    "scan_failed_threshold": 15,
+    "scan_unique_ports_threshold": 12,
+    "scan_unique_hosts_threshold": 12,
+    "scan_failed_threshold": 10,
     "scan_excluded_ports": [5353, 15600],
     "scan_ignore_multicast_dest": true,
     "dns_window_sec": 60,
-    "dns_unique_domains_threshold": 30,
-    "dns_long_domain_len": 60,
-    "dns_nxdomain_threshold": 12,
-    "dns_ignore_suffixes": [".local", ".arpa"]
+    "dns_unique_domains_threshold": 20,
+    "dns_long_domain_len": 50,
+    "dns_nxdomain_threshold": 8,
+    "dns_ignore_suffixes": [".local", ".arpa"],
+    "new_asn_country_enabled": false,
+    "tls_burst_without_data_enabled": false,
+    "beaconing_enabled": false
   }
 }

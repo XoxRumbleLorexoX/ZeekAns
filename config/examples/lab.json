@@ -1,0 +1,59 @@
+{
+  "interface": "",
+  "interfaces": ["en1", "en2", "en7"],
+  "start_zeek": true,
+  "zeek_use_sudo": true,
+  "log_dir": "./logs",
+  "ollama": {
+    "enabled": true,
+    "url": "http://127.0.0.1:11434/api/generate",
+    "model": "llama3:latest",
+    "timeout_sec": 90
+  },
+  "alerts": {
+    "output_dir": "./alerts",
+    "cooldown_sec": 20,
+    "llm_bypass_gate_severities": ["high", "critical"],
+    "llm_bypass_gate_types": ["notice"]
+  },
+  "knockknock": {
+    "enabled": true,
+    "sequence_ports": [2222, 3333, 4444],
+    "window_sec": 10,
+    "armed_ttl_sec": 300,
+    "admin_ip": "",
+    "local_ips": []
+  },
+  "anomaly": {
+    "scan_window_sec": 30,
+    "scan_unique_ports_threshold": 35,
+    "scan_unique_hosts_threshold": 30,
+    "scan_failed_threshold": 25,
+    "scan_excluded_ports": [5353, 15600],
+    "scan_ignore_multicast_dest": true,
+    "dns_window_sec": 60,
+    "dns_unique_domains_threshold": 60,
+    "dns_long_domain_len": 75,
+    "dns_nxdomain_threshold": 25,
+    "dns_ignore_suffixes": [".local", ".arpa"],
+    "new_asn_country_enabled": true,
+    "new_asn_country_warmup_sec": 1800,
+    "new_asn_country_lookup_timeout_sec": 2,
+    "new_asn_country_lookup_min_interval_sec": 0.25,
+    "new_asn_country_known_asns": ["AS15169", "AS16509"],
+    "new_asn_country_known_countries": ["US"],
+    "tls_burst_without_data_enabled": true,
+    "tls_burst_window_sec": 60,
+    "tls_burst_min_conns": 40,
+    "tls_burst_min_unique_hosts": 8,
+    "tls_burst_max_resp_bytes": 120,
+    "tls_burst_max_duration_sec": 1.5,
+    "beaconing_enabled": true,
+    "beaconing_window_sec": 900,
+    "beaconing_min_events": 6,
+    "beaconing_min_interval_sec": 10,
+    "beaconing_max_interval_sec": 600,
+    "beaconing_max_jitter_sec": 2.5,
+    "beaconing_alert_cooldown_sec": 900
+  }
+}

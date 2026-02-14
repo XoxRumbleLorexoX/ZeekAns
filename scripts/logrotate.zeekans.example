@@ -1,0 +1,10 @@
+/opt/zeekans/logs/*.log /opt/zeekans/logs/*/*.log /opt/zeekans/alerts/*.log /opt/zeekans/alerts/*.jsonl {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    create 0640 root adm
+}

@@ -1,0 +1,21 @@
+[Unit]
+Description=ZeekAns local anomaly monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/zeekans
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/bin/bash /opt/zeekans/run.sh
+Restart=always
+RestartSec=5
+User=root
+Group=root
+NoNewPrivileges=true
+LimitNOFILE=65536
+StandardOutput=append:/opt/zeekans/logs/systemd.stdout.log
+StandardError=append:/opt/zeekans/logs/systemd.stderr.log
+
+[Install]
+WantedBy=multi-user.target
